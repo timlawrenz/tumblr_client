@@ -1,94 +1,109 @@
 require 'spec_helper'
 
 describe Tumblr::Blog do
-
   let(:blog_name) { 'seejohnrun.tumblr.com' }
-  let(:post_id) { 45693025 }
+  let(:post_id) { 45_693_025 }
   let(:other_blog_name) { 'staff' }
   let(:consumer_key) { 'ckey' }
   let(:client) do
-    Tumblr::Client.new :consumer_key => consumer_key
+    Tumblr::Client.new(consumer_key: consumer_key)
   end
 
-  describe :blog_info do
+  describe '.blog_info' do
+    it 'makes a request to v2/blog/{blog_name}/info' do
+      expect(client)
+        .to receive(:get)
+        .once
+        .with("v2/blog/#{blog_name}/info", { api_key: consumer_key })
+        .and_return 'response'
 
-    it 'should make the proper request' do
-      expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/info", {
-        :api_key => consumer_key
-      }).and_return 'response'
       r = client.blog_info blog_name
       expect(r).to eq('response')
     end
 
-    it 'should make the proper request with a short blog name' do
-      expect(client).to receive(:get).once.with("v2/blog/b.tumblr.com/info", {
-        :api_key => consumer_key
-      }).and_return 'response'
+    it 'can handle a short blog name' do
+      expect(client)
+        .to receive(:get)
+        .once
+        .with('v2/blog/b.tumblr.com/info', { api_key: consumer_key })
+        .and_return 'response'
+
       r = client.blog_info 'b'
       expect(r).to eq('response')
     end
-
   end
 
-  describe :avatar do
-
+  describe '.avatar' do
     context 'when supplying a size' do
-
       before do
-        expect(client).to receive(:get_redirect_url).once.with("v2/blog/#{blog_name}/avatar/128").
-        and_return('url')
+        allow(client)
+          .to receive(:get_redirect_url)
+          .once
+          .with("v2/blog/#{blog_name}/avatar/128")
+          .and_return('url')
       end
 
-      it 'should construct the request properly' do
+      it 'constructs a request to 2/blog/{blog_name}/avatar/128' do
         r = client.avatar blog_name, 128
+
+        expect(client)
+          .to have_received(:get_redirect_url)
+          .exactly(:once)
+          .with("v2/blog/#{blog_name}/avatar/128")
+
         expect(r).to eq('url')
       end
-
     end
 
     context 'when no size is specified' do
-
       before do
-        expect(client).to receive(:get_redirect_url).once.with("v2/blog/#{blog_name}/avatar").
-        and_return('url')
+        allow(client)
+          .to receive(:get_redirect_url)
+          .once
+          .with("v2/blog/#{blog_name}/avatar")
+          .and_return('url')
       end
 
-      it 'should construct the request properly' do
+      it 'constructs a request to v2/blog/{blog_name}/avatar' do
         r = client.avatar blog_name
+
+        expect(client)
+          .to have_received(:get_redirect_url)
+          .exactly(:once)
+          .with("v2/blog/#{blog_name}/avatar")
+
         expect(r).to eq('url')
       end
-
     end
-
   end
 
-  describe :followers do
-
+  describe '.followers' do
     context 'with invalid parameters' do
-
-      it 'should raise an error' do
-        expect(lambda {
-          client.followers blog_name, :not => 'an option'
-        }).to raise_error ArgumentError
+      it 'raises an error' do
+        expect { client.followers blog_name, not: 'an option' }.to raise_error ArgumentError
       end
-
     end
 
     context 'with valid parameters' do
-
       before do
-        expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/followers", {
-          :limit => 1
-        }).and_return('response')
+        allow(client)
+          .to receive(:get)
+          .once
+          .with("v2/blog/#{blog_name}/followers", { limit: 1 })
+          .and_return('response')
       end
 
-      it 'should construct the request properly' do
-        r = client.followers blog_name, :limit => 1
-        expect(r).to eq'response'
-      end
+      it 'constructs a request to v2/blog/{blog_name}/followers' do
+        r = client.followers blog_name, limit: 1
 
+        expect(client)
+          .to have_received(:get)
+          .exactly(:once)
+          .with("v2/blog/#{blog_name}/followers", { limit: 1 })
+
+        expect(r).to eq('response')
+      end
     end
-
   end
 
   describe :blow_following do
