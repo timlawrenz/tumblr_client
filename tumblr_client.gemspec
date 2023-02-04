@@ -1,7 +1,10 @@
 # encoding: utf-8
 require File.join(File.dirname(__FILE__), 'lib/tumblr/version')
 
+
 Gem::Specification.new do |gem|
+  gem.required_ruby_version = '>= 3.1.3'
+
   gem.add_dependency 'faraday'
   gem.add_dependency 'faraday_middleware'
   gem.add_dependency 'json'

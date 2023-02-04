@@ -119,18 +119,39 @@ describe Tumblr::User do
     end
   end
 
-  describe :add_filtered_content do
+  describe '.add_filtered_content' do
+    before do
+      allow(client)
+        .to receive(:post)
+        .with('v2/user/filtered_content', { filtered_content: ['str'] })
+        .and_return('response')
+    end
+
     it 'should make the reqest properly' do
-      expect(client).to receive(:post).with("v2/user/filtered_content", filtered_content: ['str']).and_return('response')
       r = client.add_filtered_content ['str']
+      expect(client)
+        .to have_received(:post)
+        .with('v2/user/filtered_content', { filtered_content: ['str'] })
+
       expect(r).to eq('response')
     end
   end
 
   describe :delete_filtered_content do
+    before do
+      allow(client)
+        .to receive(:delete)
+        .with('v2/user/filtered_content', { filtered_content: ['str'] })
+        .and_return('response')
+    end
+
     it 'should make the reqest properly' do
-      expect(client).to receive(:delete).with("v2/user/filtered_content", filtered_content: ['str']).and_return('response')
       r = client.delete_filtered_content ['str']
+
+      expect(client)
+        .to have_received(:delete)
+        .with('v2/user/filtered_content', { filtered_content: ['str'] })
+
       expect(r).to eq('response')
     end
   end

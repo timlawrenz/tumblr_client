@@ -106,45 +106,64 @@ describe Tumblr::Blog do
     end
   end
 
-  describe :blow_following do
+  describe '.blog_following' do
     context 'with invalid parameters' do
-      it 'should raise an error' do
-        expect(lambda {
-          client.blog_following blog_name, :not => 'an option'
-        }).to raise_error ArgumentError
+      it 'raises an ArgumentError' do
+        expect { client.blog_following blog_name, not: 'an option' }.to raise_error ArgumentError
       end
     end
 
     context 'with valid parameters' do
       before do
-        expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/following", limit: 1).and_return('response')
+        allow(client)
+          .to receive(:get)
+          .once
+          .with("v2/blog/#{blog_name}/following", { limit: 1 })
+          .and_return('response')
       end
-      it 'should construct the request properly' do
-        r = client.blog_following blog_name, limit: 1
+
+      it 'constructs a request to v2/blog/{blog_name}/following' do
+        r = client.blog_following(blog_name, { limit: 1 })
+
+        expect(client)
+          .to have_received(:get)
+          .once
+          .with("v2/blog/#{blog_name}/following", limit: 1)
+
         expect(r).to eq 'response'
       end
     end
-  end # describe :blog_following
+  end
 
-  describe :followed_by do
+  describe '.followed_by' do
     context 'with invalid parameters' do
-      it 'should raise an error' do
-        expect(lambda {
-          client.followed_by blog_name, other_blog_name, :not => 'an option'
-        }).to raise_error ArgumentError
+      it 'raises an ArgumentError' do
+        expect { client.followed_by blog_name, other_blog_name, { not: 'an option' } }
+          .to raise_error ArgumentError
       end
     end
 
     context 'with valid parameters' do
       before do
-        expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/followed_by", query: other_blog_name).and_return('response')
+        allow(client)
+          .to receive(:get)
+          .once
+          .with("v2/blog/#{blog_name}/followed_by", { query: other_blog_name })
+          .and_return('response')
       end
+
       it 'should construct the request properly' do
         r = client.followed_by blog_name, other_blog_name
+
+        expect(client)
+          .to have_received(:get)
+          .exactly(:once)
+          .with("v2/blog/#{blog_name}/followed_by", { query: other_blog_name })
+
         expect(r).to eq 'response'
       end
     end
-  end # describe :followed_by
+  end
 
   describe :blog_likes do
 
@@ -171,15 +190,11 @@ describe Tumblr::Blog do
         r = client.blog_likes blog_name, :limit => 1
         expect(r).to eq('response')
       end
-
     end
-
   end
 
-  describe :posts do
-
+  describe '.posts' do
     context 'without a type supplied' do
-
       before do
         expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/posts", {
           :limit => 1,
@@ -191,11 +206,9 @@ describe Tumblr::Blog do
         r = client.posts blog_name, :limit => 1
         expect(r).to eq('response')
       end
-
     end
 
     context 'when supplying a type' do
-
       before do
         expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/posts/audio", {
           :limit => 1,
@@ -244,14 +257,25 @@ describe Tumblr::Blog do
 
     context 'with valid parameters' do
       before do
-        expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/notes", id: post_id).and_return('response')
+        allow(client)
+          .to receive(:get)
+          .once
+          .with("v2/blog/#{blog_name}/notes", { id: post_id })
+          .and_return('response')
       end
-      it 'should construct the request properly' do
+
+      it 'makes a request to v2/blog/{blog_name}/notes' do
         r = client.notes blog_name, post_id
+
+        expect(client)
+          .to have_received(:get)
+          .exactly(:once)
+          .with("v2/blog/#{blog_name}/notes", { id: post_id })
+
         expect(r).to eq('response')
       end
     end
-  end # describe :notes
+  end
 
   # These are all just lists of posts with pagination
   [:queue, :draft, :submissions].each do |type|
@@ -298,16 +322,27 @@ describe Tumblr::Blog do
 
     context 'with valid parameters' do
       before do
-        expect(client).to receive(:post).once.with("v2/blog/#{blog_name}/posts/queue/reorder", post_id: 1, insert_after: 2).and_return('response')
+        allow(client)
+          .to receive(:post)
+          .once
+          .with("v2/blog/#{blog_name}/posts/queue/reorder", { post_id: 1, insert_after: 2 })
+          .and_return('response')
       end
-      it 'should construct the request properly' do
+
+      it 'makes a call to v2/blog/#blog_name}/posts/queue/reorder' do
         r = client.reorder_queue blog_name, post_id: 1, insert_after: 2
+
+        expect(client)
+          .to have_received(:post)
+          .once
+          .with("v2/blog/#{blog_name}/posts/queue/reorder", { post_id: 1, insert_after: 2 })
+
         expect(r).to eq('response')
       end
     end
-  end # describe :reorder_queue
+  end
 
-  describe :shuffle_queue do
+  describe '.shuffle_queue' do
     it 'should construct the request properly' do
       expect(client).to receive(:post).once.with("v2/blog/#{blog_name}/posts/queue/shuffle").and_return('response')
       r = client.shuffle_queue blog_name
@@ -325,30 +360,45 @@ describe Tumblr::Blog do
     end
 
     context 'with valid parameters' do
-      it 'should construct the request properly' do
+      it 'makes a GET requst to v2/blog/seejohnrun/notifications' do
         timestamp = Time.now.to_i
-        expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/notifications", before: timestamp).and_return('response')
+
+        expect(client)
+          .to receive(:get)
+          .once
+          .with("v2/blog/#{blog_name}/notifications", { before: timestamp })
+          .and_return('response')
+
         r = client.notifications blog_name, before: timestamp
         expect(r).to eq('response')
       end
     end
-  end # describe :notifications
+  end
 
-  describe :blocks do
+  describe '.blocks' do
     context 'with invalid parameters' do
-      it 'should raise an error' do
-        expect(lambda {
-          client.blocks blog_name, not: 'an option'
-        }).to raise_error ArgumentError
+      it 'raises an AegumentError' do
+        expect { client.blocks blog_name, not: 'an option' }.to raise_error ArgumentError
       end
     end
 
     context 'with valid parameters' do
       before do
-        expect(client).to receive(:get).once.with("v2/blog/#{blog_name}/blocks", limit: 1).and_return('response')
+        allow(client)
+          .to receive(:get)
+          .once
+          .with("v2/blog/#{blog_name}/blocks", { limit: 1 })
+          .and_return('response')
       end
-      it 'should construct the request properly' do
+
+      it 'makes a GET request to v2/blog/seejohnrun.tumblr.com/blocks' do
         r = client.blocks blog_name, limit: 1
+
+        expect(client)
+          .to have_received(:get)
+          .once
+          .with('v2/blog/seejohnrun.tumblr.com/blocks', { limit: 1 })
+
         expect(r).to eq('response')
       end
     end
@@ -365,10 +415,21 @@ describe Tumblr::Blog do
 
     context 'with valid parameters' do
       before do
-        expect(client).to receive(:post).once.with("v2/blog/#{blog_name}/blocks", blocked_tumblelog: other_blog_name).and_return('response')
+        allow(client)
+          .to receive(:post)
+          .once
+          .with('v2/blog/seejohnrun.tumblr.com/blocks', { blocked_tumblelog: other_blog_name })
+          .and_return('response')
       end
-      it 'should construct the request properly' do
+
+      it 'makes a POST request to v2/blog/seejohnrun.tumblr.com/blocks' do
         r = client.block blog_name, other_blog_name
+
+        expect(client)
+          .to have_received(:post)
+          .exactly(:once)
+          .with('v2/blog/seejohnrun.tumblr.com/blocks', { blocked_tumblelog: other_blog_name })
+
         expect(r).to eq('response')
       end
     end
@@ -385,13 +446,17 @@ describe Tumblr::Blog do
 
     context 'with valid parameters' do
       before do
-        expect(client).to receive(:delete).once.with("v2/blog/#{blog_name}/blocks", blocked_tumblelog: other_blog_name).and_return('response')
+        allow(client)
+          .to receive(:delete)
+          .once
+          .with("v2/blog/#{blog_name}/blocks", { blocked_tumblelog: other_blog_name })
+          .and_return('response')
       end
       it 'should construct the request properly' do
         r = client.unblock blog_name, other_blog_name
         expect(r).to eq('response')
       end
     end
-  end # describe :unblock
+  end
 
 end

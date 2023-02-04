@@ -2,7 +2,6 @@ require 'json'
 
 module Tumblr
   module Request
-
     # Perform a get request and return the raw response
     def get_response(path, params = {})
       connection.get do |req|
@@ -22,7 +21,7 @@ module Tumblr
     end
 
     # Performs a get request
-    def get(path, params={})
+    def get(path, params = {})
       respond get_response(path, params)
     end
 

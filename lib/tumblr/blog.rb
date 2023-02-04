@@ -1,6 +1,5 @@
 module Tumblr
   module Blog
-
     # Gets the info about the blog
     def blog_info(blog_name)
       get(blog_path(blog_name, 'info'), :api_key => @consumer_key)
@@ -21,7 +20,7 @@ module Tumblr
 
     # Gets the list of blogs the user is following
     def blog_following(blog_name, options = {})
-      validate_options([:limit, :offset], options)
+      validate_options(%i[limit offset], options)
       get(blog_path(blog_name, 'following'), options)
     end
 
@@ -126,6 +125,5 @@ module Tumblr
       options[:blocked_tumblelog] ||= blockee_blog
       delete(blog_path(blocker_blog, 'blocks'), options)
     end
-
   end
 end

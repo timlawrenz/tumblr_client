@@ -1,6 +1,5 @@
 module Tumblr
   module Helper
-
     private
 
     def blog_path(blog_name, ext)
@@ -12,18 +11,19 @@ module Tumblr
     end
 
     def validate_options(valid_opts, opts)
-      bad_opts = opts.select { |val| !valid_opts.include?(val) }
-      if bad_opts.any?
-        raise ArgumentError.new "Invalid options (#{bad_opts.keys.join(', ')}) passed, only #{valid_opts} allowed."
-      end
+      bad_opts = opts.reject { |val| valid_opts.include?(val) }
+      return unless bad_opts.any?
+
+      raise ArgumentError,
+            "Invalid options (#{bad_opts.keys.join(', ')}) passed, only #{valid_opts} allowed."
     end
 
     def validate_no_collision(options, attributes)
-      count = attributes.count { |attr| options.has_key?(attr) }
-      if count > 1
-        raise ArgumentError.new "Can only use one of: #{attributes.join(', ')} (Found #{count})"
-      end
-    end
+      count = attributes.count { |attr| options.key?(attr) }
+      return unless count > 1
 
+      raise ArgumentError,
+            "Can only use one of: #{attributes.join(', ')} (Found #{count})"
+    end
   end
 end

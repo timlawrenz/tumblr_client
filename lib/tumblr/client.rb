@@ -8,7 +8,6 @@ require 'tumblr/helpers'
 
 module Tumblr
   class Client
-
     class << self
       def default_api_host
         ENV['TUMBLR_API_HOST'] || 'api.tumblr.com'
@@ -23,7 +22,7 @@ module Tumblr
     include Tumblr::Helper
     include Tumblr::Connection
 
-    def initialize(attrs= {})
+    def initialize(attrs = {})
       attrs = Tumblr.options.merge(attrs)
       Config::VALID_OPTIONS_KEYS.each do |key|
         instance_variable_set("@#{key}".to_sym, attrs[key])
@@ -39,13 +38,10 @@ module Tumblr
     end
 
     def credentials
-      {
-        :consumer_key => @consumer_key,
-        :consumer_secret => @consumer_secret,
-        :token => @oauth_token,
-        :token_secret => @oauth_token_secret
-      }
+      { consumer_key: @consumer_key,
+        consumer_secret: @consumer_secret,
+        token: @oauth_token,
+        token_secret: @oauth_token_secret }
     end
-
   end
 end
