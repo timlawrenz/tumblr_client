@@ -2,7 +2,7 @@ module Tumblr
   module Blog
     # Gets the info about the blog
     def blog_info(blog_name)
-      get(blog_path(blog_name, 'info'), :api_key => @consumer_key)
+      get(blog_path(blog_name, 'info'), api_key: @consumer_key)
     end
 
     # Gets the avatar URL of specified size
@@ -24,7 +24,7 @@ module Tumblr
       get(blog_path(blog_name, 'following'), options)
     end
 
-    # Determines whether own blog (followee_blog) is followed by follower_blog 
+    # Determines whether own blog (followee_blog) is followed by follower_blog
     # (if authorized)
     def followed_by(followee_blog, follower_blog=nil, **options)
       validate_options([:query], options)

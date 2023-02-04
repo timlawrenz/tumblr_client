@@ -10,11 +10,11 @@ describe Tumblr::Blog do
   end
 
   describe '.blog_info' do
-    it 'makes a request to v2/blog/{blog_name}/info' do
+    it 'makes a request to v2/blog/seejohnrun.tumblr.com/info' do
       expect(client)
         .to receive(:get)
         .once
-        .with("v2/blog/#{blog_name}/info", { api_key: consumer_key })
+        .with('v2/blog/seejohnrun.tumblr.com/info', { api_key: consumer_key })
         .and_return 'response'
 
       r = client.blog_info blog_name
