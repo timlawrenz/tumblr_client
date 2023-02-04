@@ -5,13 +5,15 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'faraday'
   gem.add_dependency 'faraday_middleware'
   gem.add_dependency 'json'
-  gem.add_dependency 'simple_oauth'
-  gem.add_dependency 'oauth'
   gem.add_dependency 'mime-types'
+  gem.add_dependency 'oauth'
+  gem.add_dependency 'simple_oauth'
+  gem.add_development_dependency 'simplecov'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'rubocop'
+  gem.add_development_dependency 'rubocop-rspec'
   gem.add_development_dependency 'webmock'
-  gem.add_development_dependency 'simplecov'
   gem.authors = ['John Bunting', 'John Crepezzi']
   gem.description = %q{A Ruby wrapper for the Tumblr v2 API}
   gem.email = ['codingjester@gmail.com', 'john@crepezzi.com']
